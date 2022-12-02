@@ -22,6 +22,12 @@ class Application < Sinatra::Base
   end
 
   post '/albums' do
+
+    if invlaid_request_parameters?
+      status 400
+      return ''
+    end
+
     repo = AlbumRepository.new
     new_album = Album.new
     new_album.title = params[:title]
@@ -31,6 +37,14 @@ class Application < Sinatra::Base
     repo.create(new_album)
 
     return ''
+  end
+
+  def invlaid_request_parameters?
+    params[:title] == nil || params[:release_year] == nil || params[:artist_id] ==nil
+  end
+
+  get '/albums/new' do
+    return erb(:new_album)
   end
 
   get '/albums/:id' do
@@ -50,7 +64,32 @@ class Application < Sinatra::Base
     return erb(:artists)
   end
 
-  get '/artist/:id' do
+  post '/artists' do
+
+    if invlaid_request_parameters?
+      status 400
+      return ''
+    end
+
+    repo = ArtistRepository.new
+    new_artist = Artist.new
+    new_artist.name = params[:name]
+    new_artist.genre = params[:genre]
+
+    repo.create(new_artist)
+
+    return ''
+  end
+
+  def invlaid_request_parameters?
+    params[:name] == nil || params[:genre] == nil
+  end
+
+  get '/artists/new' do
+    return erb(:new_artist)
+  end
+
+  get '/artists/:id' do
     repo = ArtistRepository.new
     @artist = repo.find(params[:id])
 

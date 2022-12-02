@@ -21,16 +21,22 @@ describe Application do
   # end
 
   context 'POST /albums' do
-    it 'creates a new album' do
-      response = post('/albums', title: 'OK computer', release_year: '1997', artist_id: '1')
+    it 'should validate album parameters' do
+      response = post('/albums', invlaid_artist_title: "OK computer", another_invalid_thing: 123)
 
-      expect(response.status).to eq 200
-      expect(response.body).to eq ('')
-
-      response = get('/albums')
-
-      expect(response.body).to include('OK computer')
+      expect(response.status).to eq 400
     end
+
+    # it 'creates a new album' do
+    #   response = post('/albums', title: 'OK computer', release_year: '1997', artist_id: '1')
+
+    #   expect(response.status).to eq 200
+    #   expect(response.body).to eq ('')
+
+    #   response = get('/albums')
+
+    #   expect(response.body).to include('OK computer')
+    # end
   end
 
   context 'GET /albums/:id' do
@@ -87,7 +93,7 @@ describe Application do
 
   context 'GET /artist/id' do
     it 'returns information about artist 1' do
-      response = get('artist/1')
+      response = get('artists/1')
 
       expect(response.status).to eq 200
       expect(response.body).to include ('Pixies')
@@ -95,7 +101,7 @@ describe Application do
     end
 
     it 'returns information about artist 2' do
-      response = get('artist/2')
+      response = get('artists/2')
 
       expect(response.status).to eq 200
       expect(response.body).to include ('ABBA')
@@ -103,11 +109,34 @@ describe Application do
     end
 
     it 'returns information about artist 3' do
-      response = get('artist/3')
+      response = get('artists/3')
 
       expect(response.status).to eq 200
       expect(response.body).to include ('Taylor Swift')
       expect(response.body).to include ('Pop')
+    end
+  end
+
+  context 'GET /albums/new' do
+    it 'returns the form to add a new album' do
+      response = get('/albums/new')
+
+      #expect(response.status).to eq 200
+      expect(response.body).to include ('<form method="POST" action="/albums">')
+      expect(response.body).to include ('<input type="text" name="title" />')
+      expect(response.body).to include ('<input type="text" name="release_year" />')
+      expect(response.body).to include ('<input type="text" name="artist_id" />')
+    end
+  end
+
+  context 'GET /artists/new' do
+    it 'returns the form to add a new album' do
+      response = get('/artists/new')
+
+      #expect(response.status).to eq 200
+      expect(response.body).to include ('<form method="POST" action="/artists">')
+      expect(response.body).to include ('<input type="text" name="name" />')
+      expect(response.body).to include ('<input type="text" name="genre" />')
     end
   end
 end
